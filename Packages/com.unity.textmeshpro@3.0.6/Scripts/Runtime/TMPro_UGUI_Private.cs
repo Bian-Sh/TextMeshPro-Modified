@@ -76,7 +76,7 @@ namespace TMPro
         {
             //Debug.Log("***** Awake() called on object ID " + GetInstanceID() + ". *****");
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             // Special handling for TMP Settings and importing Essential Resources
             if (TMP_Settings.instance == null)
             {
@@ -86,7 +86,7 @@ namespace TMPro
                 m_isWaitingOnResourceLoad = true;
                 return;
             }
-            #endif
+#endif
 
             // Cache Reference to the Canvas
             m_canvas = this.canvas;
@@ -101,15 +101,15 @@ namespace TMPro
             // Cache a reference to the CanvasRenderer.
             m_canvasRenderer = GetComponent<CanvasRenderer>();
             if (m_canvasRenderer == null)
-                m_canvasRenderer = gameObject.AddComponent<CanvasRenderer> ();
+                m_canvasRenderer = gameObject.AddComponent<CanvasRenderer>();
 
             if (m_mesh == null)
             {
                 m_mesh = new Mesh();
                 m_mesh.hideFlags = HideFlags.HideAndDontSave;
-                #if DEVELOPMENT_BUILD || UNITY_EDITOR
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
                 m_mesh.name = "TextMeshPro UI Mesh";
-                #endif
+#endif
                 // Create new TextInfo for the text object.
                 m_textInfo = new TMP_TextInfo(this);
             }
@@ -159,7 +159,7 @@ namespace TMPro
             {
                 //Debug.Log("Registering for Events.");
 
-                #if UNITY_EDITOR
+#if UNITY_EDITOR
                 // Register Callbacks for various events.
                 TMPro_EventManager.MATERIAL_PROPERTY_EVENT.Add(ON_MATERIAL_PROPERTY_CHANGED);
                 TMPro_EventManager.FONT_PROPERTY_EVENT.Add(ON_FONT_PROPERTY_CHANGED);
@@ -170,7 +170,7 @@ namespace TMPro
                 TMPro_EventManager.TMP_SETTINGS_PROPERTY_EVENT.Add(ON_TMP_SETTINGS_CHANGED);
 
                 UnityEditor.PrefabUtility.prefabInstanceUpdated += OnPrefabInstanceUpdate;
-                #endif
+#endif
                 m_isRegisteredForEvents = true;
             }
 
@@ -246,7 +246,7 @@ namespace TMPro
                 m_MaskMaterial = null;
             }
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             // Unregister the event this object was listening to
             TMPro_EventManager.MATERIAL_PROPERTY_EVENT.Remove(ON_MATERIAL_PROPERTY_CHANGED);
             TMPro_EventManager.FONT_PROPERTY_EVENT.Remove(ON_FONT_PROPERTY_CHANGED);
@@ -258,12 +258,12 @@ namespace TMPro
             TMPro_EventManager.RESOURCE_LOAD_EVENT.Remove(ON_RESOURCES_LOADED);
 
             UnityEditor.PrefabUtility.prefabInstanceUpdated -= OnPrefabInstanceUpdate;
-            #endif
+#endif
             m_isRegisteredForEvents = false;
         }
 
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         protected override void Reset()
         {
             //Debug.Log("***** Reset() *****"); //has been called.");
@@ -468,11 +468,11 @@ namespace TMPro
             //Debug.Log("Drag-n-Drop Event - Receiving Object ID " + GetInstanceID() + ". Sender ID " + obj.GetInstanceID()); // +  ". Prefab Parent is " + UnityEditor.PrefabUtility.GetPrefabParent(gameObject).GetInstanceID()); // + ". New Material is " + newMaterial.name + " with ID " + newMaterial.GetInstanceID() + ". Base Material is " + m_baseMaterial.name + " with ID " + m_baseMaterial.GetInstanceID());
 
             // Check if event applies to this current object
-            #if UNITY_2018_2_OR_NEWER
+#if UNITY_2018_2_OR_NEWER
             if (obj == gameObject || UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(gameObject) == obj)
-            #else
+#else
             if (obj == gameObject || UnityEditor.PrefabUtility.GetPrefabParent(gameObject) == obj)
-            #endif
+#endif
             {
                 UnityEditor.Undo.RecordObject(this, "Material Assignment");
                 UnityEditor.Undo.RecordObject(m_canvasRenderer, "Material Assignment");
@@ -516,7 +516,7 @@ namespace TMPro
             m_havePropertiesChanged = true;
             SetAllDirty();
         }
-        #endif
+#endif
 
 
         // Function which loads either the default font or a newly assigned font asset. This function also assigned the appropriate material to the renderer.
@@ -900,7 +900,7 @@ namespace TMPro
                 m_sharedMaterial = m_fontMaterial;
                 m_canvasRenderer.SetMaterial(m_sharedMaterial, m_sharedMaterial.GetTexture(ShaderUtilities.ID_MainTex));
             }
-            else if(m_fontMaterial == null)
+            else if (m_fontMaterial == null)
             {
                 m_fontMaterial = CreateMaterialInstance(m_sharedMaterial);
                 m_sharedMaterial = m_fontMaterial;
@@ -1875,6 +1875,25 @@ namespace TMPro
             int restoreCount = 0;
 
             k_GenerateTextPhaseIMarker.Begin();
+            // Begin of added code
+            for (var index = 0; index < m_textInfo.meshInfo.Length; index++)
+            {
+                var mi = m_textInfo.meshInfo[index];
+                var tris = mi.triangles;
+                int quadCount = mi.vertices.Length / 4;
+                for (int i = 0; i < quadCount; i++)
+                {
+                    int index_X4 = i * 4;
+                    int index_X6 = i * 6;
+                    tris[0 + index_X6] = 0 + index_X4;
+                    tris[1 + index_X6] = 1 + index_X4;
+                    tris[2 + index_X6] = 2 + index_X4;
+                    tris[3 + index_X6] = 2 + index_X4;
+                    tris[4 + index_X6] = 3 + index_X4;
+                    tris[5 + index_X6] = 0 + index_X4;
+                }
+            }
+            // End of added code
 
             // Parse through Character buffer to read HTML tags and begin creating mesh.
             for (int i = 0; i < m_TextProcessingArray.Length && m_TextProcessingArray[i].unicode != 0; i++)
@@ -3322,9 +3341,9 @@ namespace TMPro
 
                     float maxAdvanceOffset = ((m_currentFontAsset.normalSpacingOffset + characterSpacingAdjustment + boldSpacingAdjustment) * currentEmScale - m_cSpacing) * (1 - m_charWidthAdjDelta);
                     if (m_textInfo.characterInfo[m_lastVisibleCharacterOfLine].isVisible)
-                        m_textInfo.lineInfo[m_lineNumber].maxAdvance = m_textInfo.characterInfo[m_lastVisibleCharacterOfLine].xAdvance + (m_isRightToLeft ? maxAdvanceOffset : - maxAdvanceOffset);
+                        m_textInfo.lineInfo[m_lineNumber].maxAdvance = m_textInfo.characterInfo[m_lastVisibleCharacterOfLine].xAdvance + (m_isRightToLeft ? maxAdvanceOffset : -maxAdvanceOffset);
                     else
-                        m_textInfo.lineInfo[m_lineNumber].maxAdvance = m_textInfo.characterInfo[m_lastCharacterOfLine].xAdvance + (m_isRightToLeft ? maxAdvanceOffset : - maxAdvanceOffset);
+                        m_textInfo.lineInfo[m_lineNumber].maxAdvance = m_textInfo.characterInfo[m_lastCharacterOfLine].xAdvance + (m_isRightToLeft ? maxAdvanceOffset : -maxAdvanceOffset);
 
                     m_textInfo.lineInfo[m_lineNumber].baseline = 0 - m_lineOffset;
                     m_textInfo.lineInfo[m_lineNumber].ascender = lineAscender;
@@ -3453,7 +3472,7 @@ namespace TMPro
                     else if (m_isNonBreakingSpace == false &&
                              ((charCode > 0x1100 && charCode < 0x11ff || /* Hangul Jamo */
                                charCode > 0xA960 && charCode < 0xA97F || /* Hangul Jamo Extended-A */
-                               charCode > 0xAC00 && charCode < 0xD7FF)&& /* Hangul Syllables */
+                               charCode > 0xAC00 && charCode < 0xD7FF) && /* Hangul Syllables */
                               TMP_Settings.useModernHangulLineBreakingRules == false ||
 
                               (charCode > 0x2E80 && charCode < 0x9FFF || /* CJK */
@@ -4563,7 +4582,7 @@ namespace TMPro
             Transform rootCanvasTransform = m_canvas.rootCanvas.transform;
             Bounds compoundBounds = GetCompoundBounds();
 
-            Vector2 position =  rootCanvasTransform.InverseTransformPoint(m_rectTransform.position);
+            Vector2 position = rootCanvasTransform.InverseTransformPoint(m_rectTransform.position);
 
             Vector2 canvasLossyScale = rootCanvasTransform.lossyScale;
             Vector2 lossyScale = m_rectTransform.lossyScale / canvasLossyScale;
@@ -4647,7 +4666,7 @@ namespace TMPro
                 return;
             }
 
-            for (int materialIndex = 0; materialIndex < m_textInfo.materialCount; materialIndex ++)
+            for (int materialIndex = 0; materialIndex < m_textInfo.materialCount; materialIndex++)
             {
                 TMP_MeshInfo meshInfo = m_textInfo.meshInfo[materialIndex];
 
