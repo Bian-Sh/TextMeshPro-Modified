@@ -263,7 +263,6 @@ namespace TMPro
             // Re-assign Normals, Tangents and Triangles
             if (size <= previousSize)
             {
-                this.mesh.Clear(true); // Added line
                 this.mesh.triangles = this.triangles;
                 this.mesh.vertices = this.vertices;
                 this.mesh.normals = this.normals;
@@ -506,7 +505,7 @@ namespace TMPro
         }
 
 
-        public void SortGeometry(VertexSortingOrder order)
+        public void SortGeometry (VertexSortingOrder order)
         {
             switch (order)
             {
@@ -525,8 +524,8 @@ namespace TMPro
 
                     }
                     break;
-                    //case VertexSortingOrder.Depth:
-                    //    break;
+                //case VertexSortingOrder.Depth:
+                //    break;
 
             }
         }

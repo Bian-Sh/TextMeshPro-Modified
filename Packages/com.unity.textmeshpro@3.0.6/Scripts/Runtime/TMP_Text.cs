@@ -1425,7 +1425,7 @@ namespace TMPro
             public int index;
             public uint unicode;
 
-            public CharacterSubstitution(int index, uint unicode)
+            public CharacterSubstitution (int index, uint unicode)
             {
                 this.index = index;
                 this.unicode = unicode;
@@ -1688,7 +1688,7 @@ namespace TMPro
         /// <summary>
         ///
         /// </summary>
-        internal virtual void UpdateCulling() { }
+        internal virtual void UpdateCulling() {}
 
         /// <summary>
         /// Get the padding value for the currently assigned material
@@ -2559,9 +2559,9 @@ namespace TMPro
 
             m_IsTextBackingStringDirty = true;
 
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             m_text = InternalTextBackingArrayToString();
-#endif
+            #endif
 
             m_inputSource = TextInputSources.SetText;
 
@@ -2600,9 +2600,9 @@ namespace TMPro
 
             m_IsTextBackingStringDirty = true;
 
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             m_text = InternalTextBackingArrayToString();
-#endif
+            #endif
 
             // Set input source
             m_inputSource = TextInputSources.SetTextArray;
@@ -2662,9 +2662,9 @@ namespace TMPro
 
             m_IsTextBackingStringDirty = true;
 
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             m_text = InternalTextBackingArrayToString();
-#endif
+            #endif
 
             // Set input source
             m_inputSource = TextInputSources.SetTextArray;
@@ -3510,7 +3510,7 @@ namespace TMPro
         /// <summary>
         ///
         /// </summary>
-        void ResizeInternalArray<T>(ref T[] array)
+        void ResizeInternalArray <T>(ref T[] array)
         {
             int size = Mathf.NextPowerOfTwo(array.Length + 1);
 
@@ -4709,7 +4709,7 @@ namespace TMPro
                     else if (m_isNonBreakingSpace == false &&
                              ((charCode > 0x1100 && charCode < 0x11ff || /* Hangul Jamo */
                                charCode > 0xA960 && charCode < 0xA97F || /* Hangul Jamo Extended-A */
-                               charCode > 0xAC00 && charCode < 0xD7FF) && /* Hangul Syllables */
+                               charCode > 0xAC00 && charCode < 0xD7FF)&& /* Hangul Syllables */
                               TMP_Settings.useModernHangulLineBreakingRules == false ||
 
                               (charCode > 0x2E80 && charCode < 0x9FFF || /* CJK */
@@ -5050,7 +5050,7 @@ namespace TMPro
             m_textInfo.lineInfo[m_lineNumber].width = width;
 
             float maxAdvanceOffset = (glyphAdjustment * currentElementScale + (m_currentFontAsset.normalSpacingOffset + characterSpacingAdjustment + boldSpacingAdjustment) * currentEmScale - m_cSpacing) * (1 - m_charWidthAdjDelta);
-            float adjustedHorizontalAdvance = m_textInfo.lineInfo[m_lineNumber].maxAdvance = m_textInfo.characterInfo[m_lastVisibleCharacterOfLine].xAdvance + (m_isRightToLeft ? maxAdvanceOffset : -maxAdvanceOffset);
+            float adjustedHorizontalAdvance = m_textInfo.lineInfo[m_lineNumber].maxAdvance = m_textInfo.characterInfo[m_lastVisibleCharacterOfLine].xAdvance + (m_isRightToLeft ? maxAdvanceOffset : - maxAdvanceOffset);
             m_textInfo.characterInfo[lastCharacterIndex].xAdvance = adjustedHorizontalAdvance;
 
             m_textInfo.lineInfo[m_lineNumber].baseline = 0 - m_lineOffset;
@@ -5936,23 +5936,9 @@ namespace TMPro
             colors32[3 + index] = highlightColor;
             #endregion
 
-            // Begin of added code
-            {
-                var meshInfo = m_textInfo.meshInfo[underlineMaterialIndex];
-                int previousSize = index / 4;
-                if (s_tris == null || s_tris.Length != 6)
-                    s_tris = new int[6];
-                Array.Copy(meshInfo.triangles, previousSize * 6, s_tris, 0, 6);
-                Array.Copy(meshInfo.triangles, 0, meshInfo.triangles, 6, previousSize * 6);
-                Array.Copy(s_tris, 0, meshInfo.triangles, 0, 6);
-                meshInfo.mesh.triangles = meshInfo.triangles;
-            }
-            // End of added code
-
             index += 4;
         }
-        // Cached array to copy triangles, length 6.
-        private static int[] s_tris;
+
 
         /// <summary>
         /// Internal function used to load the default settings of text objects.
@@ -7041,7 +7027,7 @@ namespace TMPro
             //    Debug.Log("Tag [" + i + "] with HashCode: " + m_xmlAttribute[i].nameHashCode + " has value of [" + new string(m_htmlTag, m_xmlAttribute[i].valueStartIndex, m_xmlAttribute[i].valueLength) + "] Numerical Value: " + ConvertToFloat(m_htmlTag, m_xmlAttribute[i].valueStartIndex, m_xmlAttribute[i].valueLength));
 
             #region Rich Text Tag Processing
-#if !RICH_TEXT_ENABLED
+            #if !RICH_TEXT_ENABLED
             // Special handling of the no parsing tag </noparse> </NOPARSE> tag
             if (tag_NoParsing && (m_xmlAttribute[0].nameHashCode != 53822163 && m_xmlAttribute[0].nameHashCode != 49429939))
                 return false;
@@ -7140,7 +7126,7 @@ namespace TMPro
                         if (m_xmlAttribute[1].nameHashCode == 281955 || m_xmlAttribute[1].nameHashCode == 192323)
                         {
                             m_strikethroughColor = HexCharsToColor(m_htmlTag, m_xmlAttribute[1].valueStartIndex, m_xmlAttribute[1].valueLength);
-                            m_strikethroughColor.a = m_htmlColor.a < m_strikethroughColor.a ? (byte)(m_htmlColor.a) : (byte)(m_strikethroughColor.a);
+                            m_strikethroughColor.a = m_htmlColor.a < m_strikethroughColor.a ? (byte)(m_htmlColor.a) : (byte)(m_strikethroughColor .a);
                         }
                         else
                             m_strikethroughColor = m_htmlColor;
@@ -8474,12 +8460,12 @@ namespace TMPro
                     case 912: // <td>
                     case 656: // <TD>
                               // Style options
-                              //for (int i = 1; i < m_xmlAttribute.Length && m_xmlAttribute[i].nameHashCode != 0; i++)
-                              //{
-                              //    switch (m_xmlAttribute[i].nameHashCode)
-                              //    {
-                              //        case 327550: // width
-                              //            float tableWidth = ConvertToFloat(m_htmlTag, m_xmlAttribute[i].valueStartIndex, m_xmlAttribute[i].valueLength);
+                        //for (int i = 1; i < m_xmlAttribute.Length && m_xmlAttribute[i].nameHashCode != 0; i++)
+                        //{
+                        //    switch (m_xmlAttribute[i].nameHashCode)
+                        //    {
+                        //        case 327550: // width
+                        //            float tableWidth = ConvertToFloat(m_htmlTag, m_xmlAttribute[i].valueStartIndex, m_xmlAttribute[i].valueLength);
 
                         //            switch (tagUnitType)
                         //            {
@@ -8520,7 +8506,7 @@ namespace TMPro
                         return false;
                 }
             }
-#endif
+            #endif
             #endregion
 
             return false;
